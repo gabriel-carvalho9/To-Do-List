@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/style.css">
+    <title>To-Do List</title>
+</head>
+<body>
+    <header>
+        <h1>To-Do List</h1>
+    </header>
+    <main>  
+        <section id="caixa">
+            <div class="input-container">
+                <div class="linha-input">
+                    <div class="item-input">
+                        <label for ="inserirTarefa">Nova Tarefa:</label>
+                        <input type="text" id="inserirTarefa" placeholder="Adicione uma nova tarefa...">
+                    </div>
+                    <div class="item-input">
+                        <label for ="valorTarefa">Valor da Tarefa por hora (R$)</label>
+                        <input type="number" id="valorTarefa" placeholder="Adicione o valor da tarefa" step="0.01">
+                    </div>
+                </div>
+                <div class="linha-input">
+                    <div class="item-input">
+                        <label for="quantidadeHora">Quantas Horas?</label>
+                        <input type="number" id="quantidadeHora" placeholder="Inserir quantidade de horas">
+                    </div>
+                    <div class="item-input">
+                        <label for="Imposto">Imposto (%)</label>
+                        <input type="number" id="Imposto" placeholder="Valor do Imposto" step="0.01">
+                    </div>
+                </div>
+                    <div class="grupo-botoes">
+                        <button id="adicionarTarefa" onclick="adicionar()">Adicionar Tarefa</button>
+                        <button id="resetar" onclick="resetarTudo()">Resetar Tudo</button>
+                    </div>
+                </div>
+        </section>  
+
+        <section id="caixaTarefas">
+            <ul id="listaTarefas"></ul>
+        </section>
+    </main>
+    <script src="../scripts/script.js"></script>
+</body>
+</html>
