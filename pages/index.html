@@ -20,7 +20,7 @@
                     </div>
                     <div class="item-input">
                         <label for ="valorTarefa">Valor da Tarefa por hora (R$)</label>
-                        <input type="number" id="valorTarefa" placeholder="Adicione o valor da tarefa" step="0.01">
+                        <input type="number" id="valorHora" placeholder="Adicione o valor da tarefa" step="0.01">
                     </div>
                 </div>
                 <div class="linha-input">
@@ -30,8 +30,15 @@
                     </div>
                     <div class="item-input">
                         <label for="Imposto">Imposto (%)</label>
-                        <input type="number" id="Imposto" placeholder="Valor do Imposto" step="0.01">
+                        <input type="number" id="imposto" placeholder="Valor do Imposto" step="0.01">
                     </div>
+                </div>
+                <div class="select">
+                    <select id="urgencias">
+                        <option value="semUrgencia">Sem Urgência - Preço Normal</option>
+                        <option value="Urgente">Urgente + 20%</option>
+                        <option value="muitaUrgencia">Muita Urgência + 50%</option>
+                    </select>
                 </div>
                     <div class="grupo-botoes">
                         <button id="adicionarTarefa" onclick="adicionar()">Adicionar Tarefa</button>
@@ -39,9 +46,11 @@
                     </div>
                 </div>
         </section>  
-
         <section id="caixaTarefas">
             <ul id="listaTarefas"></ul>
+        </section>
+        <section id="caixaCusto">
+            <h2>Custo Total: R$ <span id="custoTotal">0.00</span></h2>
         </section>
     </main>
     <script src="../scripts/script.js"></script>

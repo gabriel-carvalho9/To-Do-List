@@ -1,68 +1,116 @@
 const inputTarefa = document.getElementById('inserirTarefa'); // Representa o campo de entrada para a tarefa
-const inputValorHora = document.getElementById('valorTarefa'); // Representa o valor da hora
+const inputValorHora = document.getElementById('valorHora'); // Representa o valor da hora
 const inputHoras = document.getElementById('quantidadeHora'); // Representa a quantidade de horas
-const inputImposto = document.getElementById('Imposto'); // Representa o valor do imposto
+const inputImposto = document.getElementById('imposto'); // Representa o valor do imposto
 const listaTarefas = document.getElementById('listaTarefas'); // Representa a lista onde as tarefas serão exibidas
-const containerLista = document.getElementById('caixaTarefas'); /* Representa o contêiner que envolve a lista de tarefas, 
- usado para mostrar ou esconder a caixa de tarefas */
+const caixaLista = document.getElementById('caixaTarefas'); /* Representa o contêiner que envolve a lista de tarefas,
+usado para mostrar ou esconder a caixa de tarefas */
+const caixaCusto = document.getElementById('caixaCusto');/* Representa o contêiner que envolve a lista de tarefas, 
+usado para mostrar ou esconder a caixa de tarefas */
+let valoresTarefas = []; // Array para armazenar os valores totais de cada tarefa, facilitando o cálculo do custo total
+const valorBruto = 0;
+const valorTotal = 0; 
+let soma = 0;
+
+const tarefas = {
+    nome: inputTarefa.value,
+    id: Date.now(), //usado para gerar IDs únicos para as tarefas
+    valor: valorTotal
+};
+
+valoresTarefas.push(novaTarefa);
+atualizarInterface();
 
 function adicionar() {
-    const tarefa = inputTarefa.value.trim(); /* O método trim() remove os espaços em branco do início e do fim da string,
-    garantindo que o usuário não possa adicionar uma tarefa vazia mesmo que insira apenas espaços. */
+    const tarefaNome = inputTarefa.value.trim();
     const valorHora = Number(inputValorHora.value);
     const horas = Number(inputHoras.value);
-    const imposto = Number(inputImposto.value); /* O método Number() é usado para converter os valores de entrada em números,
-    permitindo que sejam usados em cálculos posteriormente. */
+    const imposto = Number(inputImposto.value);
     
-    if (tarefa === "" || valorHora <= 0 || horas <= 0) { 
-        alert("Por favor, preencha todos os campos corretamente!");
+    // Capturar a urgência selecionada no momento do clique
+    const selectUrgencia = document.getElementById('urgencias').value;
+
+    if (tarefaNome === "" || valorHora <= 0 || horas <= 0) { 
+        alert("Preencha corretamente!");
         return; 
     }
 
+    // Definir o multiplicador de urgência
+    let multiplicador = 1; // Padrão: Sem urgência (multiplica por 1, não muda nada)
+
+    if (selectUrgencia === "Urgente") {
+        multiplicador = 1.20; // +20%
+    } else if (selectUrgencia === "muitaUrgencia") {
+        multiplicador = 1.50; // +50%
+    }
+
+    // Cálculos (Valor com imposto * Multiplicador de Urgência)
     const valorBruto = valorHora * horas;
-    const valorTotal = valorBruto + (valorBruto * imposto / 100);
+    const valorComImposto = valorBruto + (valorBruto * imposto / 100);
+    const valorTotalTarefa = valorComImposto * multiplicador;
 
-        containerLista.style.display = "block"; // Exibe a caixa de tarefas quando uma tarefa é adicionada
+    // Criar o objeto com a informação da urgência (opcional para exibir depois)
+    const novaTarefa = {
+        id: Date.now(),
+        nome: tarefaNome,
+        valor: valorTotalTarefa,
+        imposto: imposto,
+        urgencia: selectUrgencia // Guardamos para saber o nível de urgência
+    };
 
-        const listaItem = document.createElement('li'); // Cria um elemento de lista
-
-        listaItem.innerHTML = `
-        <span><strong>${tarefa}</strong><br>
-        <small>R$ ${valorTotal.toFixed(2)} (com ${imposto}% imposto)</small></span>
-        `; 
-        /* Define o conteúdo HTML do elemento de lista, incluindo a tarefa e o valor total formatado com duas casas decimais, 
-        além do imposto aplicado */
-
-        const botaoRemover = document.createElement('button'); // Cria um elemento de remover
-        botaoRemover.innerText = "X";
-
-        botaoRemover.onclick = function() {
-            listaItem.remove(); // Remove a tarefa da lista quando o botão de remover é clicado
-
-            if (listaTarefas.children.length === 0) { // Verifica se a lista de tarefas está vazia
-                /* o .children aparece antes do .length para contar os elementos filhos da lista de tarefas, pois
-                se fosse apenas o .length, a tag <ul> não tem "comprimento" então provavelmente seria 0 sempre*/
-                containerLista.style.display = "none"; // Esconde a caixa de tarefas se não houver mais tarefas
-            }
-        };
-
-        // As linhas abaixo precisam estar FORA do onclick para funcionarem assim que você clica em "Adicionar"
-        listaItem.appendChild(botaoRemover); // Adiciona o botão de remover à tarefa
-        listaTarefas.appendChild(listaItem); // Adiciona novos elementos no final da lista
-
-        if (valorTotal < 100) {
-        lista.style.border = "2px solid red";
-        }
-
+    valoresTarefas.push(novaTarefa);
+    atualizarInterface();
     limparFormulario();
 }
+
+function atualizarInterface() {
+    // Limpa a lista na tela para não repetir o que já estava lá
+    listaTarefas.innerHTML = "";
+    
+    let somaTotal = 0; // Começa a soma do zero
+
+    // O forEach percorre cada item da sua Array
+    valoresTarefas.forEach(item => {
+        somaTotal += item.valor; // Soma o valor desse item ao total
+
+        // Cria o elemento na tela
+        const listaItem = document.createElement('li');
+        listaItem.innerHTML = `
+            <span><strong>${item.nome}</strong><br>
+            <small>R$ ${item.valor.toFixed(2)} (com ${item.imposto}% imposto)</small></span>
+        `;
+
+        // Cria o botão de remover e diz o que ele deve fazer
+        const botaoRemover = document.createElement('button');
+        botaoRemover.innerText = "X";
+        botaoRemover.onclick = () => removerTarefa(item.id); // Remove pelo ID
+
+        listaItem.appendChild(botaoRemover);
+        listaTarefas.appendChild(listaItem);
+    });
+
+    // Atualiza o custo total e mostra/esconde as caixas
+    document.getElementById('custoTotal').innerText = somaTotal.toFixed(2);
+    caixaLista.style.display = valoresTarefas.length > 0 ? "block" : "none";
+    caixaCusto.style.display = valoresTarefas.length > 0 ? "block" : "none";
+}
+
+function removerTarefa(idParaRemover) {
+    // Dizemos: "A lista agora só tem quem NÃO tem esse ID"
+    valoresTarefas = valoresTarefas.filter(t => t.id !== idParaRemover);
+    
+    // Como a lista mudou, chamamos o desenhista de novo
+    atualizarInterface();
+}   
 
 function resetarTudo() {
     // Limpa todos os itens da lista de uma vez
     listaTarefas.innerHTML = "";
     
-    // Esconde a caixa de tarefas após resetar tudo, já que não haverá mais tarefas para exibir
-    containerLista.style.display = "none";
+    // Esconde as caixas após resetar tudo, já que não haverá mais tarefas nem custo para exibir
+    caixaLista.style.display = "none";
+    caixaCusto.style.display = "none";
+
     limparFormulario();
 }   
 
