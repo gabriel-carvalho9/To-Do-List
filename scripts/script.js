@@ -26,36 +26,22 @@ function adicionar() {
     const valorHora = Number(inputValorHora.value);
     const horas = Number(inputHoras.value);
     const imposto = Number(inputImposto.value);
-    
-    // Capturar a urgência selecionada no momento do clique
-    const selectUrgencia = document.getElementById('urgencias').value;
 
-    if (tarefaNome === "" || valorHora <= 0 || horas <= 0) { 
-        alert("Preencha corretamente!");
-        return; 
-    }
-
-    // Definir o multiplicador de urgência
-    let multiplicador = 1; // Padrão: Sem urgência (multiplica por 1, não muda nada)
-
-    if (selectUrgencia === "Urgente") {
-        multiplicador = 1.20; // +20%
-    } else if (selectUrgencia === "muitaUrgencia") {
-        multiplicador = 1.50; // +50%
-    }
+        if (tarefaNome === "" || valorHora <= 0 || horas <= 0) { 
+            alert("Preencha corretamente!");
+            return; 
+        }
 
     // Cálculos (Valor com imposto * Multiplicador de Urgência)
     const valorBruto = valorHora * horas;
     const valorComImposto = valorBruto + (valorBruto * imposto / 100);
-    const valorTotalTarefa = valorComImposto * multiplicador;
 
     // Criar o objeto com a informação da urgência (opcional para exibir depois)
     const novaTarefa = {
         id: Date.now(),
         nome: tarefaNome,
-        valor: valorTotalTarefa,
+        valor: valorComImposto,
         imposto: imposto,
-        urgencia: selectUrgencia // Guardamos para saber o nível de urgência
     };
 
     valoresTarefas.push(novaTarefa);
@@ -90,16 +76,12 @@ function atualizarInterface() {
     });
 
     // Atualiza o custo total e mostra/esconde as caixas
-    document.getElementById('custoTotal').innerText = somaTotal.toFixed(2);
     caixaLista.style.display = valoresTarefas.length > 0 ? "block" : "none";
-    caixaCusto.style.display = valoresTarefas.length > 0 ? "block" : "none";
 }
 
 function removerTarefa(idParaRemover) {
-    // Dizemos: "A lista agora só tem quem NÃO tem esse ID"
     valoresTarefas = valoresTarefas.filter(t => t.id !== idParaRemover);
     
-    // Como a lista mudou, chamamos o desenhista de novo
     atualizarInterface();
 }   
 
@@ -120,4 +102,41 @@ function limparFormulario() {
     inputHoras.value = "";
     inputImposto.value = "";
     inputTarefa.focus();
+}
+
+function gerarOrcamento() {
+    const tarefaNome = inputTarefa.value.trim();
+    const valorHora = Number(inputValorHora.value);
+    const horas = Number(inputHoras.value);
+    const imposto = Number(inputImposto.value);
+    const selectUrgencia = document.getElementById('urgencias').value;
+    let valorTotalTarefa = 0;
+
+    let somaTotal = 0;
+
+    valoresTarefas.forEach(item => {
+        somaTotal += item.valor;
+    });
+
+    if (valoresTarefas.length === 0) {
+        alert("Adicione pelo menos uma tarefa para gerar o orçamento.");
+        return;
+    }
+
+    // Definir o multiplicador de urgência
+    let multiplicador = 1; // Padrão: Sem urgência (multiplica por 1, não muda nada)
+
+    if (selectUrgencia === "Urgente") {
+        multiplicador = 1.20; // +20%
+    } else if (selectUrgencia === "muitaUrgencia") {
+        multiplicador = 1.50; // +50%   
+    }
+
+    // Cálculos (Valor com imposto * Multiplicador de Urgência)
+    const valorBruto = valorHora * horas;
+    const valorComImposto = valorBruto + (valorBruto * imposto / 100);
+    valorTotalTarefa = valorComImposto * multiplicador;
+
+    document.getElementById('custoTotal').innerText = somaTotal.toFixed(2);
+    caixaCusto.style.display = valoresTarefas.length > 0 ? "block" : "none";
 }
